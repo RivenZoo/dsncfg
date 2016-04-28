@@ -74,7 +74,7 @@ host = "my.host"
 user = "any"
 name = "dbname"
   [database.parameters]
-  charset = utf8
+  charset = "utf8"
 ```
 
 Result:
