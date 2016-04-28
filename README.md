@@ -10,15 +10,13 @@ This micro library helps to convert database configuration section to the data s
 | Field          | Description                                              |
 | :------------- | :------------------------------------------------------- |
 | Pot            | Database port, only for tcp connection                   |
-| Host           | Database host. Use this paramater to set host address or |
-|                | path to the unix socket or database file path            |
+| Host           | Database host. Use this paramater to set host address or path to the unix socket or database file path |
 | Name           | Database name, only for the MySql, PgSql                 |
 | Protocol       | Use tcp or unix connection type for the MySql and PgSql  |
 | Type           | Database type: sqlite, mysql, pgsql                      |
 | User           | Database user                                            |
 | Password       | Databse password                                         |
-| Parameters     | Additional connection options in URI                     |
-|                | query string format. options get separated by &          |
+| Parameters     | Additional connection options in URI query string format. options get separated by & |
 
 ### Usage
 
