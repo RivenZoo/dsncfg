@@ -11,41 +11,54 @@ import (
 // 1 - PgSql
 // 3 - SqLite
 const (
-	MySql = iota
+	MySql  = iota
 	PgSql
 	SqLite
+)
+
+const (
+	defaultMysqlPort      = 3306
+	defaultPgsqlPort      = 5432
+	defaultHost           = "localhost"
+	defaultSqliteDataFile = "/tmp/sqlite.db"
 )
 
 // Database configuration
 type Database struct {
 	// Database port, only for tcp connection
-	Port int
+	// Default:
+	//   mysql: 3306
+	//   pgsql: 5432
+	Port int `json:"port"`
 	// Database host. Use this paramater to set host address or
 	// path to the unix socket or database file path
-	Host,
+	// Default:
+	//   mysql/pgsql: localhost
+	//   sqlite: /tmp/sqlite.db
+	Host string `json:"host"`
 	// Database name, only for the MySql, PgSql
-	Name,
-	// Use tcp or unix connection type for the MySql and PgSql
-	Protocol,
+	Name string `json:"name"`
+	// Use tcp or unix connection type for the MySql and PgSql.
+	// Default: tcp
+	Protocol string `json:"protocol"`
 	// Database type: sqlite, mysql, pgsql
-	Type,
+	Type string `json:"type"`
 	// Database user
-	User,
+	User string `json:"user"`
 	// Databse password
-	Password string
+	Password string `json:"password"`
 	// Additional connection options in URI query string format. options get separated by &
-	Parameters map[string]string
+	Parameters map[string]string `json:"parameters"`
 
 	dbType int
 }
 
 var (
-	ErrorUnsupportedDB = errors.New("Unsupported database")
+	ErrorUnsupportedDB    = errors.New("Unsupported database")
 	ErrorUnsupportedProto = errors.New("Unsupported database protocol")
-	ErrorDBNameRequired = errors.New("Database name is required")
+	ErrorDBNameRequired   = errors.New("Database name is required")
 	ErrorUserNameRequired = errors.New("Database user is required")
 )
-
 
 // Validate fields according to the databae type
 // Must be called instantly configuration was parsed
@@ -60,12 +73,12 @@ func (this *Database) Init() (err error) {
 
 	// rewrite empty host and port for the MySql and PgSql
 	if this.dbType != SqLite {
-		this.Host = strDefault(this.Host, "localhost")
+		this.Host = strDefault(this.Host, defaultHost)
 
 		if this.dbType == MySql {
-			this.Port = intDefault(this.Port, 3306)
+			this.Port = intDefault(this.Port, defaultMysqlPort)
 		} else {
-			this.Port = intDefault(this.Port, 5555)
+			this.Port = intDefault(this.Port, defaultPgsqlPort)
 		}
 
 		if isEmpty(this.User) {
@@ -76,7 +89,7 @@ func (this *Database) Init() (err error) {
 			return ErrorDBNameRequired
 		}
 	} else {
-		this.Host = strDefault(this.Host, "/tpm/unknown/db/path")
+		this.Host = strDefault(this.Host, defaultSqliteDataFile)
 	}
 
 	return nil
@@ -105,10 +118,14 @@ func (this *Database) setdbType() error {
 	this.Type = strings.ToLower(this.Type)
 
 	switch this.Type {
-		case "mysql": this.dbType = MySql;
-		case "pgsql": this.dbType = PgSql;
-		case "sqlite": this.dbType = SqLite;
-		default: return ErrorUnsupportedDB;
+	case "mysql":
+		this.dbType = MySql;
+	case "pgsql":
+		this.dbType = PgSql;
+	case "sqlite":
+		this.dbType = SqLite;
+	default:
+		return ErrorUnsupportedDB;
 	}
 
 	return nil
@@ -182,15 +199,15 @@ func (this *Database) uriString() string {
 // Check if string is empty or int is 0
 func isEmpty(in interface{}) bool {
 	switch in.(type) {
-		case string:
-			if str := strings.Trim(in.(string), " "); str != "" {
-				return false
-			}
+	case string:
+		if str := strings.Trim(in.(string), " "); str != "" {
+			return false
+		}
 
-		case int:
-			if in.(int) > 0 {
-				return false
-			}
+	case int:
+		if in.(int) > 0 {
+			return false
+		}
 	}
 	return true
 }
