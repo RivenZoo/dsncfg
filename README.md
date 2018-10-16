@@ -9,7 +9,7 @@ This micro library helps to convert database configuration section to the data s
 
 | Field          | Description                                              |
 | :------------- | :------------------------------------------------------- |
-| Pot            | Database port, only for tcp connection                   |
+| Port           | Database port, only for tcp connection                   |
 | Host           | Database host. Use this paramater to set host address or path to the unix socket or database file path |
 | Name           | Database name, only for the MySql, PgSql                 |
 | Protocol       | Use tcp or unix connection type for the MySql and PgSql  |
