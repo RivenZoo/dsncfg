@@ -9,47 +9,46 @@ type DatabaseMock struct {
 	Valid string
 }
 
-
 func Test_DSNValid(t *testing.T) {
 	var (
-		cfg *Database
+		cfg  *Database
 		mock = []DatabaseMock{
 			DatabaseMock{
-				Database: Database{Type:"sqlite",Host:"/some/database/file.db",Name:"anydb",User:"bla",Port:432},
-				Valid:"/some/database/file.db",
+				Database: Database{Type: "sqlite", Host: "/some/database/file.db", Name: "anydb", User: "bla", Port: 432},
+				Valid:    "/some/database/file.db",
 			},
 			DatabaseMock{
-				Database: Database{Type:"sqlite"},
-				Valid:"/tpm/unknown/db/path",
+				Database: Database{Type: "sqlite"},
+				Valid:    defaultSqliteDataFile,
 			},
 			DatabaseMock{
-				Database: Database{Type:"mysql",User:"User",Name:"DB"},
-				Valid:"User@tcp(localhost:3306)/DB",
+				Database: Database{Type: "mysql", User: "User", Name: "DB"},
+				Valid:    "User@tcp(localhost:3306)/DB",
 			},
 			DatabaseMock{
-				Database: Database{Type:"pgsql",User:"User",Name:"DB"},
-				Valid:"User@tcp(localhost:5555)/DB",
+				Database: Database{Type: "pgsql", User: "User", Name: "DB"},
+				Valid:    "User@tcp(localhost:5432)/DB",
 			},
 			DatabaseMock{
-				Database: Database{Type:"pgsql",User:"User",Port:65101,Name:"DB"},
-				Valid:"User@tcp(localhost:65101)/DB",
+				Database: Database{Type: "pgsql", User: "User", Port: 65101, Name: "DB"},
+				Valid:    "User@tcp(localhost:65101)/DB",
 			},
 			DatabaseMock{
-				Database: Database{Type:"pgsql",Protocol:"Unix",User:"User",Password:"$anyPw334!",Name:"DB"},
-				Valid:"User:$anyPw334!@unix(localhost)/DB",
+				Database: Database{Type: "pgsql", Protocol: "Unix", User: "User", Password: "$anyPw334!", Name: "DB"},
+				Valid:    "User:$anyPw334!@unix(localhost)/DB",
 			},
 		}
 	)
 
 	for _, v := range mock {
 		cfg = &Database{
-			Type: v.Type,
+			Type:     v.Type,
 			Protocol: v.Protocol,
-			Host: v.Host,
-			Port: v.Port,
-			User: v.User,
+			Host:     v.Host,
+			Port:     v.Port,
+			User:     v.User,
 			Password: v.Password,
-			Name: v.Name,
+			Name:     v.Name,
 		}
 
 		if err := cfg.Init(); err != nil {
@@ -65,25 +64,25 @@ func Test_DSNValid(t *testing.T) {
 
 func Test_getAuthStringValid(t *testing.T) {
 	var (
-		cfg *Database
+		cfg  *Database
 		mock = []DatabaseMock{
 			DatabaseMock{
-				Database: Database{Type:"mysql",User:"User",Name:"DB"},
-				Valid:"User",
+				Database: Database{Type: "mysql", User: "User", Name: "DB"},
+				Valid:    "User",
 			},
 			DatabaseMock{
-				Database: Database{Type:"pgsql",User:"User",Password:"&dhg(0saq1",Name:"DB"},
-				Valid:"User:&dhg(0saq1",
+				Database: Database{Type: "pgsql", User: "User", Password: "&dhg(0saq1", Name: "DB"},
+				Valid:    "User:&dhg(0saq1",
 			},
 		}
 	)
 
 	for _, v := range mock {
 		cfg = &Database{
-			Type: v.Type,
-			User: v.User,
+			Type:     v.Type,
+			User:     v.User,
 			Password: v.Password,
-			Name: v.Name,
+			Name:     v.Name,
 		}
 
 		if err := cfg.Init(); err != nil {
@@ -99,43 +98,43 @@ func Test_getAuthStringValid(t *testing.T) {
 
 func Test_getSourceStringValid(t *testing.T) {
 	var (
-		cfg *Database
+		cfg  *Database
 		mock = []DatabaseMock{
 			DatabaseMock{
-				Database: Database{Type:"sqlite",Host:"/some/database/file.db"},
-				Valid:"/some/database/file.db",
+				Database: Database{Type: "sqlite", Host: "/some/database/file.db"},
+				Valid:    "/some/database/file.db",
 			},
 			DatabaseMock{
-				Database: Database{Type:"sqlite"},
-				Valid:"/tpm/unknown/db/path",
+				Database: Database{Type: "sqlite"},
+				Valid:    defaultSqliteDataFile,
 			},
 			DatabaseMock{
-				Database: Database{Type:"mysql",User:"User",Name:"DB"},
-				Valid:"tcp(localhost:3306)",
+				Database: Database{Type: "mysql", User: "User", Name: "DB"},
+				Valid:    "tcp(localhost:3306)",
 			},
 			DatabaseMock{
-				Database: Database{Type:"pgsql",User:"User",Name:"DB"},
-				Valid:"tcp(localhost:5555)",
+				Database: Database{Type: "pgsql", User: "User", Name: "DB"},
+				Valid:    "tcp(localhost:5432)",
 			},
 			DatabaseMock{
-				Database: Database{Type:"pgsql",User:"User",Port:65101,Name:"DB"},
-				Valid:"tcp(localhost:65101)",
+				Database: Database{Type: "pgsql", User: "User", Port: 65101, Name: "DB"},
+				Valid:    "tcp(localhost:65101)",
 			},
 			DatabaseMock{
-				Database: Database{Type:"pgsql",Protocol:"Unix",User:"User",Name:"DB"},
-				Valid:"unix(localhost)",
+				Database: Database{Type: "pgsql", Protocol: "Unix", User: "User", Name: "DB"},
+				Valid:    "unix(localhost)",
 			},
 		}
 	)
 
 	for _, v := range mock {
 		cfg = &Database{
-			Type: v.Type,
+			Type:     v.Type,
 			Protocol: v.Protocol,
-			Host: v.Host,
-			Port: v.Port,
-			User: v.User,
-			Name: v.Name,
+			Host:     v.Host,
+			Port:     v.Port,
+			User:     v.User,
+			Name:     v.Name,
 		}
 
 		if err := cfg.Init(); err != nil {
@@ -151,7 +150,7 @@ func Test_getSourceStringValid(t *testing.T) {
 
 func Test_setProtocolUnknown(t *testing.T) {
 	var (
-		cfg *Database
+		cfg  *Database
 		mock = []DatabaseMock{
 			DatabaseMock{
 				Database: Database{Type: "mysql", Protocol: "abc"},
@@ -174,19 +173,19 @@ func Test_setProtocolUnknown(t *testing.T) {
 
 func test_setProtocol(t *testing.T) {
 	var (
-		cfg *Database
+		cfg  *Database
 		mock = []DatabaseMock{
 			DatabaseMock{
-				Database: Database{Type:"mysql",Protocol:"unix"},
-				Valid:"unix",
+				Database: Database{Type: "mysql", Protocol: "unix"},
+				Valid:    "unix",
 			},
 			DatabaseMock{
-				Database: Database{Type:"pgsql", Protocol:"tcp"},
-				Valid:"tcp",
+				Database: Database{Type: "pgsql", Protocol: "tcp"},
+				Valid:    "tcp",
 			},
 			DatabaseMock{
-				Database: Database{Type:"mysql"},
-				Valid: "tcp",
+				Database: Database{Type: "mysql"},
+				Valid:    "tcp",
 			},
 		}
 	)
@@ -218,12 +217,12 @@ func Test_setdbTypeUnknownType(t *testing.T) {
 
 func Test_setdbTypeValid(t *testing.T) {
 	type Mock struct {
-		Type string
+		Type  string
 		Valid int
 	}
 
 	var (
-		cfg *Database
+		cfg  *Database
 		mock = []Mock{
 			Mock{"mysql", MySql},
 			Mock{"pgsql", PgSql},
