@@ -26,15 +26,15 @@ func Test_DSNValid(t *testing.T) {
 				Valid:    "User@tcp(localhost:3306)/DB",
 			},
 			DatabaseMock{
-				Database: Database{Type: "pgsql", User: "User", Name: "DB"},
+				Database: Database{Type: "postgres", User: "User", Name: "DB"},
 				Valid:    "User@tcp(localhost:5432)/DB",
 			},
 			DatabaseMock{
-				Database: Database{Type: "pgsql", User: "User", Port: 65101, Name: "DB"},
+				Database: Database{Type: "postgres", User: "User", Port: 65101, Name: "DB"},
 				Valid:    "User@tcp(localhost:65101)/DB",
 			},
 			DatabaseMock{
-				Database: Database{Type: "pgsql", Protocol: "Unix", User: "User", Password: "$anyPw334!", Name: "DB"},
+				Database: Database{Type: "postgres", Protocol: "Unix", User: "User", Password: "$anyPw334!", Name: "DB"},
 				Valid:    "User:$anyPw334!@unix(localhost)/DB",
 			},
 		}
@@ -71,7 +71,7 @@ func Test_getAuthStringValid(t *testing.T) {
 				Valid:    "User",
 			},
 			DatabaseMock{
-				Database: Database{Type: "pgsql", User: "User", Password: "&dhg(0saq1", Name: "DB"},
+				Database: Database{Type: "postgres", User: "User", Password: "&dhg(0saq1", Name: "DB"},
 				Valid:    "User:&dhg(0saq1",
 			},
 		}
@@ -113,15 +113,15 @@ func Test_getSourceStringValid(t *testing.T) {
 				Valid:    "tcp(localhost:3306)",
 			},
 			DatabaseMock{
-				Database: Database{Type: "pgsql", User: "User", Name: "DB"},
+				Database: Database{Type: "postgres", User: "User", Name: "DB"},
 				Valid:    "tcp(localhost:5432)",
 			},
 			DatabaseMock{
-				Database: Database{Type: "pgsql", User: "User", Port: 65101, Name: "DB"},
+				Database: Database{Type: "postgres", User: "User", Port: 65101, Name: "DB"},
 				Valid:    "tcp(localhost:65101)",
 			},
 			DatabaseMock{
-				Database: Database{Type: "pgsql", Protocol: "Unix", User: "User", Name: "DB"},
+				Database: Database{Type: "postgres", Protocol: "Unix", User: "User", Name: "DB"},
 				Valid:    "unix(localhost)",
 			},
 		}
@@ -156,7 +156,7 @@ func Test_setProtocolUnknown(t *testing.T) {
 				Database: Database{Type: "mysql", Protocol: "abc"},
 			},
 			DatabaseMock{
-				Database: Database{Type: "pgsql", Protocol: "ynix"},
+				Database: Database{Type: "postgres", Protocol: "ynix"},
 			},
 		}
 	)
@@ -180,7 +180,7 @@ func test_setProtocol(t *testing.T) {
 				Valid:    "unix",
 			},
 			DatabaseMock{
-				Database: Database{Type: "pgsql", Protocol: "tcp"},
+				Database: Database{Type: "postgres", Protocol: "tcp"},
 				Valid:    "tcp",
 			},
 			DatabaseMock{
@@ -224,9 +224,9 @@ func Test_setdbTypeValid(t *testing.T) {
 	var (
 		cfg  *Database
 		mock = []Mock{
-			Mock{"mysql", MySql},
-			Mock{"pgsql", PgSql},
-			Mock{"sqlite", SqLite},
+			Mock{"mysql", dbTypeMySql},
+			Mock{"postgres", dbTypePgSql},
+			Mock{"sqlite", dbTypeSqLite},
 		}
 	)
 

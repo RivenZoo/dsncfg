@@ -7,13 +7,19 @@ import (
 	"strings"
 )
 
-// 0 - MySql
-// 1 - PgSql
-// 3 - SqLite
 const (
-	MySql  = iota
-	PgSql
-	SqLite
+	MySql      = "mysql"
+	Postgresql = "postgres"
+	Sqlite     = "sqlite"
+)
+
+// 0 - dbTypeMySql
+// 1 - dbTypePgSql
+// 3 - dbTypeSqLite
+const (
+	dbTypeMySql  = iota
+	dbTypePgSql
+	dbTypeSqLite
 )
 
 const (
@@ -41,7 +47,7 @@ type Database struct {
 	// Use tcp or unix connection type for the MySql and PgSql.
 	// Default: tcp
 	Protocol string `json:"protocol"`
-	// Database type: sqlite, mysql, pgsql
+	// Database type: sqlite, mysql, postgres
 	Type string `json:"type"`
 	// Database user
 	User string `json:"user"`
@@ -71,11 +77,11 @@ func (this *Database) Init() (err error) {
 		return
 	}
 
-	// rewrite empty host and port for the MySql and PgSql
-	if this.dbType != SqLite {
+	// rewrite empty host and port for the MySql and Postgresql
+	if this.dbType != dbTypeSqLite {
 		this.Host = strDefault(this.Host, defaultHost)
 
-		if this.dbType == MySql {
+		if this.dbType == dbTypeMySql {
 			this.Port = intDefault(this.Port, defaultMysqlPort)
 		} else {
 			this.Port = intDefault(this.Port, defaultPgsqlPort)
@@ -97,14 +103,14 @@ func (this *Database) Init() (err error) {
 
 // Create the data source name string to pass itd to the database driver
 func (this *Database) DSN() (dsn string) {
-	if this.dbType != SqLite {
+	if this.dbType != dbTypeSqLite {
 		dsn = this.authString()
 		dsn += "@"
 	}
 
 	dsn += this.sourceString()
 
-	if this.dbType != SqLite {
+	if this.dbType != dbTypeSqLite {
 		dsn += "/" + this.Name
 	}
 
@@ -118,12 +124,12 @@ func (this *Database) setdbType() error {
 	this.Type = strings.ToLower(this.Type)
 
 	switch this.Type {
-	case "mysql":
-		this.dbType = MySql;
-	case "pgsql":
-		this.dbType = PgSql;
-	case "sqlite":
-		this.dbType = SqLite;
+	case MySql:
+		this.dbType = dbTypeMySql;
+	case Postgresql:
+		this.dbType = dbTypePgSql;
+	case Sqlite:
+		this.dbType = dbTypeSqLite;
 	default:
 		return ErrorUnsupportedDB;
 	}
@@ -135,7 +141,7 @@ func (this *Database) setdbType() error {
 func (this *Database) setProtocol() error {
 	this.Protocol = strings.ToLower(this.Protocol)
 
-	if this.dbType == MySql || this.dbType == PgSql {
+	if this.dbType == dbTypeMySql || this.dbType == dbTypePgSql {
 		this.Protocol = strDefault(this.Protocol, "tcp")
 
 		if this.Protocol != "tcp" && this.Protocol != "unix" {
@@ -146,12 +152,12 @@ func (this *Database) setProtocol() error {
 	return nil
 }
 
-// Mysql and PgSql connection:
+// Mysql and Postgresql connection:
 // tcp - tcp(host:port)
 // unix - unix(host)
-// SqLite will use host value as database file path
+// Sqlite will use host value as database file path
 func (this *Database) sourceString() (source string) {
-	if this.dbType == SqLite {
+	if this.dbType == dbTypeSqLite {
 		source = this.Host
 	} else {
 		if this.Protocol == "tcp" {
@@ -166,9 +172,9 @@ func (this *Database) sourceString() (source string) {
 	return source
 }
 
-// MySql and PgSql authorization string (login:password)
+// Mysql and Postgresql authorization string (login:password)
 func (this *Database) authString() (auth string) {
-	if this.dbType == SqLite {
+	if this.dbType == dbTypeSqLite {
 		return
 	}
 
